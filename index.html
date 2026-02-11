@@ -465,6 +465,17 @@
                     <div class="tech-item"><span class="label">Incidents</span><span class="value">Rootly</span></div>
                 </div>
             </div>
+            <div class="section">
+                <div class="section-title">📝 ICICI's Tech Stack / Alternatives</div>
+                <textarea class="notes-area" id="techstackNotes" placeholder="What does ICICI use?
+
+Their container platform:
+Their CI/CD:
+Their monitoring:
+Their secrets management:
+Other notes:
+" oninput="saveTabNotes('techstack')"></textarea>
+            </div>
         </div>
         
         <!-- Infrastructure Tab -->
@@ -517,6 +528,19 @@
                     <div class="to">Site-to-site VPN (IPSec, IKE v1/v2)</div>
                 </div>
             </div>
+            <div class="section">
+                <div class="section-title">📝 ICICI's Infrastructure Details</div>
+                <textarea class="notes-area" id="infraNotes" placeholder="What ICICI confirmed they have:
+
+Container orchestration:
+Storage solution:
+Message queue:
+Database setup:
+Load balancer:
+Networking/VPN:
+Other constraints:
+" oninput="saveTabNotes('infra')"></textarea>
+            </div>
         </div>
         
         <!-- Gaps Tab -->
@@ -548,6 +572,19 @@
                     <p>Bank's DR requirements and failover setup</p>
                 </div>
             </div>
+            <div class="section">
+                <div class="section-title">📝 Gap Resolution Notes</div>
+                <textarea class="notes-area" id="gapsNotes" placeholder="How ICICI proposes to address gaps:
+
+OTP provider they use:
+Their IDP (Keycloak/ADFS/other):
+Log aggregation solution:
+Air-gap / internet access:
+HSM details:
+DR strategy:
+New gaps identified:
+" oninput="saveTabNotes('gaps')"></textarea>
+            </div>
         </div>
         
         <!-- Estimates Tab -->
@@ -575,6 +612,18 @@
                     <div class="tech-item"><span class="label">Redis</span><span class="value">4 days</span></div>
                     <div class="tech-item"><span class="label">QA framework</span><span class="value">6 days</span></div>
                 </div>
+            </div>
+            <div class="section">
+                <div class="section-title">📝 Timeline & Commercial Notes</div>
+                <textarea class="notes-area" id="estimatesNotes" placeholder="Discussion on timelines:
+
+ICICI's expected go-live date:
+Their resource availability:
+Agreed milestones:
+Commercial terms discussed:
+Blockers / dependencies:
+Next steps:
+" oninput="saveTabNotes('estimates')"></textarea>
             </div>
         </div>
         
@@ -665,6 +714,7 @@ Next steps:
         let answers = JSON.parse(localStorage.getItem('icici-bbps-answers') || '{}');
         let checked = JSON.parse(localStorage.getItem('icici-bbps-checked') || '{}');
         let notes = localStorage.getItem('icici-bbps-notes') || '';
+        let tabNotes = JSON.parse(localStorage.getItem('icici-bbps-tabnotes') || '{}');
         
         function initQuestions() {
             Object.keys(questions).forEach(containerId => {
@@ -725,6 +775,24 @@ Next steps:
         
         document.getElementById('mainNotes').addEventListener('input', autoSave);
         
+        function saveTabNotes(tabId) {
+            const textarea = document.getElementById(tabId + 'Notes');
+            if (textarea) {
+                tabNotes[tabId] = textarea.value;
+                localStorage.setItem('icici-bbps-tabnotes', JSON.stringify(tabNotes));
+                showSaveIndicator();
+            }
+        }
+        
+        function loadTabNotes() {
+            ['techstack', 'infra', 'gaps', 'estimates'].forEach(tabId => {
+                const textarea = document.getElementById(tabId + 'Notes');
+                if (textarea && tabNotes[tabId]) {
+                    textarea.value = tabNotes[tabId];
+                }
+            });
+        }
+        
         function showSaveIndicator() {
             const indicator = document.getElementById('saveIndicator');
             indicator.classList.add('show');
@@ -753,7 +821,8 @@ Next steps:
                 timestamp: new Date().toISOString(),
                 answers: answers,
                 checked: checked,
-                notes: document.getElementById('mainNotes').value
+                notes: document.getElementById('mainNotes').value,
+                tabNotes: tabNotes
             };
             
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
@@ -795,6 +864,12 @@ Next steps:
                         localStorage.setItem('icici-bbps-notes', data.notes);
                     }
                     
+                    // Restore tab notes
+                    if (data.tabNotes) {
+                        tabNotes = data.tabNotes;
+                        localStorage.setItem('icici-bbps-tabnotes', JSON.stringify(tabNotes));
+                    }
+                    
                     // Refresh the UI
                     location.reload();
                     
@@ -831,6 +906,21 @@ ${'='.repeat(50)}
                     const answer = answers[key] || '(No answer recorded)';
                     content += `${isChecked} Q: ${q}\n   A: ${answer}\n\n`;
                 });
+            });
+            
+            // Add tab notes
+            const tabTitles = {
+                'techstack': 'TECH STACK NOTES',
+                'infra': 'INFRASTRUCTURE NOTES',
+                'gaps': 'GAP RESOLUTION NOTES',
+                'estimates': 'TIMELINE & COMMERCIAL NOTES'
+            };
+            
+            Object.keys(tabTitles).forEach(tabId => {
+                if (tabNotes[tabId] && tabNotes[tabId].trim()) {
+                    content += `\n${'='.repeat(50)}\n## ${tabTitles[tabId]}\n\n`;
+                    content += tabNotes[tabId] + '\n';
+                }
             });
             
             content += `\n${'='.repeat(50)}\n## CALL NOTES\n\n`;
@@ -883,6 +973,7 @@ ${'='.repeat(50)}
         
         // Initialize on load
         initQuestions();
+        loadTabNotes();
     </script>
 </body>
 </html>
