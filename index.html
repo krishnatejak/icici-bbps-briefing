@@ -395,9 +395,11 @@
     <div class="header">
         <h1>📋 ICICI BBPS On-Prem Deployment</h1>
         <div class="header-actions">
-            <button class="btn btn-outline" onclick="saveToFile()">💾 Save Notes</button>
-            <button class="btn btn-primary" onclick="downloadAll()">📥 Download All</button>
-            <button class="btn btn-success" onclick="generateSummary()">📝 Generate Summary</button>
+            <button class="btn btn-outline" onclick="saveToFile()">💾 Save</button>
+            <button class="btn btn-outline" onclick="loadFromFile()">📂 Load</button>
+            <button class="btn btn-primary" onclick="downloadAll()">📥 Export</button>
+            <button class="btn btn-success" onclick="generateSummary()">📝 Summary</button>
+            <input type="file" id="fileInput" style="display:none" accept=".json" onchange="handleFileLoad(event)">
         </div>
     </div>
     
@@ -760,6 +762,47 @@ Next steps:
             a.href = url;
             a.download = `icici-bbps-notes-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
+        }
+        
+        function loadFromFile() {
+            document.getElementById('fileInput').click();
+        }
+        
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Restore answers
+                    if (data.answers) {
+                        answers = data.answers;
+                        localStorage.setItem('icici-bbps-answers', JSON.stringify(answers));
+                    }
+                    
+                    // Restore checked state
+                    if (data.checked) {
+                        checked = data.checked;
+                        localStorage.setItem('icici-bbps-checked', JSON.stringify(checked));
+                    }
+                    
+                    // Restore notes
+                    if (data.notes) {
+                        document.getElementById('mainNotes').value = data.notes;
+                        localStorage.setItem('icici-bbps-notes', data.notes);
+                    }
+                    
+                    // Refresh the UI
+                    location.reload();
+                    
+                } catch (err) {
+                    alert('Error loading file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
         }
         
         function downloadAll() {
