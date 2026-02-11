@@ -25,6 +25,7 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.5;
+            padding-bottom: 60px;
         }
         
         .header {
@@ -141,6 +142,11 @@
             border: 1px solid var(--border);
         }
         
+        .section.priority {
+            border: 2px solid var(--accent);
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        
         .section-title {
             font-size: 1.1rem;
             font-weight: 600;
@@ -156,6 +162,7 @@
             border-radius: 8px;
             margin-bottom: 12px;
             overflow: hidden;
+            background: white;
         }
         
         .question-header {
@@ -372,6 +379,16 @@
         .save-indicator.show {
             opacity: 1;
         }
+        
+        .priority-badge {
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -398,28 +415,34 @@
         
         <!-- Questions Tab -->
         <div id="questions" class="tab-content active">
+            
+            <div class="section priority">
+                <div class="section-title">🤝 Roles & Responsibilities <span class="priority-badge">START HERE</span></div>
+                <div id="rr-questions"></div>
+            </div>
+            
             <div class="section">
-                <div class="section-title">🏗️ Infrastructure Questions</div>
+                <div class="section-title">🏗️ Infrastructure</div>
                 <div id="infra-questions"></div>
             </div>
             
             <div class="section">
-                <div class="section-title">🌐 Networking Questions</div>
+                <div class="section-title">🌐 Networking</div>
                 <div id="network-questions"></div>
             </div>
             
             <div class="section">
-                <div class="section-title">🔐 Security Questions</div>
+                <div class="section-title">🔐 Security</div>
                 <div id="security-questions"></div>
             </div>
             
             <div class="section">
-                <div class="section-title">⚙️ Operations Questions</div>
+                <div class="section-title">⚙️ Operations</div>
                 <div id="ops-questions"></div>
             </div>
             
             <div class="section">
-                <div class="section-title">🔑 Access & Support Questions</div>
+                <div class="section-title">🔑 Access & Support</div>
                 <div id="access-questions"></div>
             </div>
         </div>
@@ -577,7 +600,7 @@ Next steps:
     
     <div class="status-bar">
         <div class="progress">
-            <span id="progressText">0 of 24 questions answered</span>
+            <span id="progressText">0 of 30 questions answered</span>
             <div class="progress-bar">
                 <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
             </div>
@@ -586,8 +609,20 @@ Next steps:
     </div>
 
     <script>
-        // Questions data
+        // Questions data - Roles & Responsibilities FIRST
         const questions = {
+            'rr-questions': [
+                'Who owns/manages the infrastructure (VMs, K8s, storage, DB)?',
+                'Who is responsible for L1 support (first-line monitoring, alerts)?',
+                'Who handles L2 support (troubleshooting, minor fixes)?',
+                'Who handles L3 support (code changes, deep debugging)?',
+                'Who manages patching and OS/infra upgrades?',
+                'Who handles security scanning and vulnerability remediation?',
+                'Who manages backups and disaster recovery?',
+                'Who is the SPOC from ICICI for day-to-day issues?',
+                'What is the escalation matrix for critical incidents?',
+                'SLA expectations - uptime, response times, resolution times?'
+            ],
             'infra-questions': [
                 'What K8s platform? (OpenShift/Tanzu/other?)',
                 'What container registry? (Harbor/Artifactory?)',
@@ -736,9 +771,18 @@ ${'='.repeat(50)}
 
 `;
             
+            const sectionNames = {
+                'rr-questions': 'ROLES & RESPONSIBILITIES',
+                'infra-questions': 'INFRASTRUCTURE',
+                'network-questions': 'NETWORKING',
+                'security-questions': 'SECURITY',
+                'ops-questions': 'OPERATIONS',
+                'access-questions': 'ACCESS & SUPPORT'
+            };
+            
             Object.keys(questions).forEach(containerId => {
-                const title = containerId.replace('-questions', '').toUpperCase();
-                content += `\n## ${title} QUESTIONS\n\n`;
+                const title = sectionNames[containerId] || containerId.toUpperCase();
+                content += `\n## ${title}\n\n`;
                 
                 questions[containerId].forEach((q, i) => {
                     const key = `${containerId}-${i}`;
@@ -760,20 +804,35 @@ ${'='.repeat(50)}
         }
         
         function generateSummary() {
+            const sectionNames = {
+                'rr-questions': 'Roles & Responsibilities',
+                'infra-questions': 'Infrastructure',
+                'network-questions': 'Networking',
+                'security-questions': 'Security',
+                'ops-questions': 'Operations',
+                'access-questions': 'Access & Support'
+            };
+            
             let summary = `# ICICI BBPS On-Prem - Meeting Summary\n`;
             summary += `Date: ${new Date().toLocaleDateString()}\n\n`;
-            summary += `## Key Answers from ICICI\n\n`;
             
             Object.keys(questions).forEach(containerId => {
+                const sectionTitle = sectionNames[containerId] || containerId;
+                let sectionContent = '';
+                
                 questions[containerId].forEach((q, i) => {
                     const key = `${containerId}-${i}`;
                     if (answers[key] && answers[key].trim()) {
-                        summary += `**${q}**\n${answers[key]}\n\n`;
+                        sectionContent += `**${q}**\n${answers[key]}\n\n`;
                     }
                 });
+                
+                if (sectionContent) {
+                    summary += `## ${sectionTitle}\n\n${sectionContent}`;
+                }
             });
             
-            summary += `## Notes\n\n${document.getElementById('mainNotes').value}`;
+            summary += `## Additional Notes\n\n${document.getElementById('mainNotes').value}`;
             
             document.getElementById('mainNotes').value = summary;
             showTab('notes');
