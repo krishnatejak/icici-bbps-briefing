@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICICI BBPS On-Prem Deployment Briefing</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --secondary: #2b6cb0;
+            --accent: #ed8936;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h3 {
+            color: var(--secondary);
+            font-size: 1rem;
+            margin: 16px 0 8px 0;
+        }
+        
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .card li:last-child {
+            border-bottom: none;
+        }
+        
+        .card li::before {
+            content: "→";
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .tech-badge {
+            display: inline-block;
+            background: #edf2f7;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 4px;
+            color: var(--primary);
+        }
+        
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .mapping-table th, .mapping-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .mapping-table th {
+            background: #f7fafc;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .mapping-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .arrow {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .question-category {
+            background: #ebf8ff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+        
+        .question-category h4 {
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--secondary);
+        }
+        
+        .estimate-box {
+            background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .estimate-box .big-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .estimate-box .label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .gap-item {
+            background: #fffaf0;
+            border-left: 4px solid var(--accent);
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .gap-item strong {
+            color: var(--primary);
+        }
+        
+        .pitch-point {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+        
+        .pitch-point .icon {
+            font-size: 1.5rem;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mapping-table {
+                font-size: 0.85rem;
+            }
+        }
+        
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 1rem;
+        }
+        
+        .print-btn:hover {
+            background: var(--primary);
+        }
+        
+        @media print {
+            .print-btn { display: none; }
+            header { background: var(--primary) !important; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📋 ICICI BBPS On-Prem Deployment</h1>
+        <p>Technical Briefing Document | February 2026</p>
+    </header>
+    
+    <div class="container">
+        <div class="grid">
+            <!-- Tech Stack Card -->
+            <div class="card">
+                <h2>🛠️ Setu BBPS Tech Stack</h2>
+                <div>
+                    <h3>Languages</h3>
+                    <span class="tech-badge">Go (Primary)</span>
+                    <span class="tech-badge">Python (Secondary)</span>
+                    <span class="tech-badge">TypeScript</span>
+                </div>
+                <div>
+                    <h3>Frontend</h3>
+                    <span class="tech-badge">NextJS</span>
+                    <span class="tech-badge">React</span>
+                </div>
+                <div>
+                    <h3>DevOps & Infra</h3>
+                    <span class="tech-badge">GitLab CI/CD</span>
+                    <span class="tech-badge">Terraform</span>
+                    <span class="tech-badge">AWS</span>
+                    <span class="tech-badge">Vercel</span>
+                </div>
+                <div>
+                    <h3>Observability</h3>
+                    <span class="tech-badge">ClickhouseDB</span>
+                    <span class="tech-badge">Grafana</span>
+                    <span class="tech-badge">Rootly</span>
+                </div>
+                <div>
+                    <h3>Security</h3>
+                    <span class="tech-badge">HashiCorp Vault</span>
+                </div>
+            </div>
+            
+            <!-- Infrastructure Mapping Card -->
+            <div class="card full-width">
+                <h2>🔄 Infrastructure Component Mapping</h2>
+                <table class="mapping-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Component</th>
+                            <th>Current (AWS)</th>
+                            <th></th>
+                            <th>On-Prem Equivalent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><strong>Container Orchestration</strong></td>
+                            <td>ECS</td>
+                            <td class="arrow">→</td>
+                            <td>Kubernetes (OpenShift/Tanzu) + Helm</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><strong>Storage</strong></td>
+                            <td>S3</td>
+                            <td class="arrow">→</td>
+                            <td>MinIO / Ceph / Bank's storage</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><strong>Message Queue</strong></td>
+                            <td>SQS</td>
+                            <td class="arrow">→</td>
+                            <td>RabbitMQ (HA) / Kafka / ActiveMQ</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><strong>Database</strong></td>
+                            <td>RDS PostgreSQL</td>
+                            <td class="arrow">→</td>
+                            <td>PostgreSQL + Patroni/pgBackRest</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><strong>Cache</strong></td>
+                            <td>ElastiCache Redis</td>
+                            <td class="arrow">→</td>
+                            <td>Redis/Valkey (Cluster mode)</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><strong>Observability</strong></td>
+                            <td>ClickHouse + Grafana</td>
+                            <td class="arrow">→</td>
+                            <td>ELK/Splunk + Grafana + Fluent Bit</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><strong>Load Balancer</strong></td>
+                            <td>ALB/NLB</td>
+                            <td class="arrow">→</td>
+                            <td>F5 / A10 / HAProxy</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><strong>Secrets Management</strong></td>
+                            <td>AWS Secrets Manager</td>
+                            <td class="arrow">→</td>
+                            <td>HashiCorp Vault + Bank's HSM/PKI</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td><strong>VPN / Connectivity</strong></td>
+                            <td>AWS VPN Gateway</td>
+                            <td class="arrow">→</td>
+                            <td>Site-to-site VPN (IPSec, IKE v1/v2)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Questions Card - Infrastructure -->
+            <div class="card">
+                <h2>❓ Questions for ICICI Team</h2>
+                
+                <div class="question-category">
+                    <h4>🏗️ Infrastructure</h4>
+                    <div class="checkbox-item"><input type="checkbox"> What K8s platform? (OpenShift/Tanzu/other?)</div>
+                    <div class="checkbox-item"><input type="checkbox"> What container registry? (Harbor/Artifactory?)</div>
+                    <div class="checkbox-item"><input type="checkbox"> What storage solution? (MinIO/Ceph/NFS?)</div>
+                    <div class="checkbox-item"><input type="checkbox"> What message queue? (RabbitMQ/Kafka?)</div>
+                    <div class="checkbox-item"><input type="checkbox"> PostgreSQL managed or need setup?</div>
+                    <div class="checkbox-item"><input type="checkbox"> What log aggregation? (ELK/Splunk?)</div>
+                    <div class="checkbox-item"><input type="checkbox"> What load balancer? (F5/A10/HAProxy?)</div>
+                </div>
+                
+                <div class="question-category">
+                    <h4>🌐 Networking</h4>
+                    <div class="checkbox-item"><input type="checkbox"> How to access NPCI from on-prem?</div>
+                    <div class="checkbox-item"><input type="checkbox"> NAT/Egress proxy setup?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Firewall whitelisting process?</div>
+                    <div class="checkbox-item"><input type="checkbox"> VPN tunnel specs (IKE, encryption)?</div>
+                    <div class="checkbox-item"><input type="checkbox"> DNS resolution for internal services?</div>
+                </div>
+            </div>
+            
+            <!-- Questions Card - Security & Ops -->
+            <div class="card">
+                <h2>❓ Questions (continued)</h2>
+                
+                <div class="question-category">
+                    <h4>🔐 Security</h4>
+                    <div class="checkbox-item"><input type="checkbox"> What HSM/PKI for secrets?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Vault or bank's secret management?</div>
+                    <div class="checkbox-item"><input type="checkbox"> OAuth/IDP for dashboard? (Keycloak/ADFS?)</div>
+                    <div class="checkbox-item"><input type="checkbox"> OTP provider for whitelabel portal?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Certificate management process?</div>
+                </div>
+                
+                <div class="question-category">
+                    <h4>⚙️ Operations</h4>
+                    <div class="checkbox-item"><input type="checkbox"> CI/CD inside bank? (Jenkins/GitLab?)</div>
+                    <div class="checkbox-item"><input type="checkbox"> Air-gapped or internet access?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Container image mirroring process?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Monitoring/alerting integration?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Incident escalation process?</div>
+                </div>
+                
+                <div class="question-category">
+                    <h4>🔑 Access & Support</h4>
+                    <div class="checkbox-item"><input type="checkbox"> SSH/bastion access for Setu?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Log access for debugging?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Change management process?</div>
+                    <div class="checkbox-item"><input type="checkbox"> Maintenance window procedures?</div>
+                </div>
+            </div>
+            
+            <!-- Effort Estimates Card -->
+            <div class="card">
+                <h2>📊 Effort Estimates</h2>
+                
+                <div class="estimate-box">
+                    <div class="big-number">~9.5 months</div>
+                    <div class="label">First Bank On-Prem BOU</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 8px;">
+                        104 (base) + 48 (one-time) + 57 (recurring) = 209 man-days
+                    </div>
+                </div>
+                
+                <div class="estimate-box">
+                    <div class="big-number">~10 months</div>
+                    <div class="label">First Bank On-Prem COU</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 8px;">
+                        104 (base) + 48 (one-time) + 73 (recurring) = 225 man-days
+                    </div>
+                </div>
+                
+                <h3>One-Time Work Breakdown</h3>
+                <ul>
+                    <li>K8s migration & Helm: 15 days</li>
+                    <li>Storage/queue replacement: 8 days</li>
+                    <li>Observability migration: 15 days</li>
+                    <li>Redis integration: 4 days</li>
+                    <li>QA framework: 6 days</li>
+                </ul>
+            </div>
+            
+            <!-- Gaps Card -->
+            <div class="card">
+                <h2>⚠️ Gaps to Cover</h2>
+                
+                <div class="gap-item">
+                    <strong>1. OTP Integration</strong><br>
+                    Need bank-approved OTP provider for whitelabel portal
+                </div>
+                
+                <div class="gap-item">
+                    <strong>2. OAuth Refactoring</strong><br>
+                    Merchant dashboard needs separate OAuth client per bank IDP (Keycloak/ADFS)
+                </div>
+                
+                <div class="gap-item">
+                    <strong>3. Log Stack Replacement</strong><br>
+                    ClickHouse → Bank's ELK/Splunk with custom dashboards
+                </div>
+                
+                <div class="gap-item">
+                    <strong>4. Air-Gap Support</strong><br>
+                    Package all dependencies for offline deployment
+                </div>
+                
+                <div class="gap-item">
+                    <strong>5. HSM Integration</strong><br>
+                    Secrets management must work with bank's HSM
+                </div>
+                
+                <div class="gap-item">
+                    <strong>6. Multi-AZ / DR Strategy</strong><br>
+                    Bank's DR requirements and failover setup
+                </div>
+            </div>
+            
+            <!-- Cloud vs On-Prem Card -->
+            <div class="card full-width">
+                <h2>☁️ Cloud vs On-Prem Talking Points</h2>
+                <p style="color: var(--text-light); margin-bottom: 16px;">Use if ICICI pushes back on on-prem complexity</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="pitch-point">
+                        <span class="icon">⚡</span>
+                        <div><strong>Faster Go-Live</strong><br>Days vs 8-12 weeks for on-prem</div>
+                    </div>
+                    <div class="pitch-point">
+                        <span class="icon">👥</span>
+                        <div><strong>Less Infra Dependency</strong><br>Bank teams are usually overloaded</div>
+                    </div>
+                    <div class="pitch-point">
+                        <span class="icon">✅</span>
+                        <div><strong>Regulator Approved</strong><br>RBI, NPCI, NBBL accept cloud deployments</div>
+                    </div>
+                    <div class="pitch-point">
+                        <span class="icon">🛡️</span>
+                        <div><strong>Better Reliability</strong><br>Built-in HA, automated failover</div>
+                    </div>
+                    <div class="pitch-point">
+                        <span class="icon">💰</span>
+                        <div><strong>Lower TCO</strong><br>No hardware, storage, DR management</div>
+                    </div>
+                    <div class="pitch-point">
+                        <span class="icon">🔒</span>
+                        <div><strong>Stronger Security</strong><br>Private subnets, IAM, auto-patching</div>
+                    </div>
+                    <div class="pitch-point">
+                        <span class="icon">🔍</span>
+                        <div><strong>Faster Debugging</strong><br>Centralized dashboards, quick RCA</div>
+                    </div>
+                    <div class="pitch-point">
+                        <span class="icon">🚀</span>
+                        <div><strong>Agile Updates</strong><br>Simplified change management</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Prepared by Setu | Last updated: February 11, 2026</p>
+        <p style="margin-top: 8px;">Source: Confluence Documentation</p>
+    </footer>
+    
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+</body>
+</html>
